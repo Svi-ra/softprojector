@@ -17,7 +17,7 @@
 //
 ***************************************************************************/
 
-#include "../3rdparty/headers/qmediaplaylist.h"
+#include <QMediaPlayer>
 #include "../headers/projectordisplayscreen.hpp"
 #include "ui_projectordisplayscreen.h"
 
@@ -178,7 +178,8 @@ void ProjectorDisplayScreen::setBackVideo(QString path)
 
     setVideoSource(item,path);
     item->setProperty("volume",0.0);
-    item->setProperty("loops",QMediaPlaylist::Loop);
+    // Background video: loop forever behind whatever is being projected.
+    item->setProperty("loops", QMediaPlayer::Infinite);
     item2->setProperty("fillMode",Qt::IgnoreAspectRatio);
 }
 
@@ -447,7 +448,7 @@ void ProjectorDisplayScreen::renderVideo(VideoInfo videoDetails)
     setVideoSource(item,videoDetails.filePath);
 
     item->setProperty("volume",1.0);
-    item->setProperty("loops",QMediaPlaylist::CurrentItemOnce);
+    item->setProperty("loops", QMediaPlayer::Once);
     item2->setProperty("fillMode",Qt::KeepAspectRatio);
 
     updateScreen();

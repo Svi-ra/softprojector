@@ -21,32 +21,23 @@
 #define SOFTPROJECTOR_HPP
 
 #include <QMainWindow>
-#include "songwidget.hpp"
-#include "biblewidget.hpp"
-#include "announcewidget.hpp"
 #include "projectordisplayscreen.hpp"
 #include "editwidget.hpp"
 #include "bible.hpp"
 #include "managedatadialog.hpp"
-#include "mediacontrol.hpp"
 #include "settingsdialog.hpp"
 #include "songcounter.hpp"
 #include "settings.hpp"
 #include "printpreviewdialog.hpp"
 #include "helpdialog.hpp"
-#include "picturewidget.hpp"
 #include "slideshow.hpp"
-#include "mediawidget.hpp"
 #include "videoinfo.hpp"
 #include "slideshoweditor.hpp"
 #include "schedule.hpp"
+#include "workspace.hpp"
 
+class QQuickWidget;
 class QActionGroup;
-
-namespace Ui
-{
-class SoftProjectorClass;
-}
 
 enum PresentationType
 {
@@ -57,6 +48,10 @@ enum PresentationType
     VIDEO
 };
 
+// The main window is a shell around the QML workspace. It keeps everything
+// that talks to the projector — display screens, themes, image generation,
+// schedule files, printing — and owns a Workspace view-model that the QML
+// binds to.
 class SoftProjector : public QMainWindow
 {
     Q_OBJECT
@@ -64,18 +59,13 @@ class SoftProjector : public QMainWindow
 public:
     SoftProjector(QWidget *parent = 0);
     ~SoftProjector();
-    SongWidget *songWidget;
-    BibleWidget *bibleWidget;
-    AnnounceWidget *announceWidget;
-    ManageDataDialog *manageDialog;
+
     EditWidget *editWidget;
+    ManageDataDialog *manageDialog;
     ProjectorDisplayScreen *pds1;
     ProjectorDisplayScreen *pds2;
     ProjectorDisplayScreen *pds3;
     ProjectorDisplayScreen *pds4;
-    PictureWidget *pictureWidget;
-    MediaWidget *mediaPlayer;
-    MediaControl *mediaControls;
 
     bool showing; // whether we are currently showing to the projector
     Song current_song;
@@ -85,8 +75,6 @@ public:
     QString version_string;
     Theme theme;
     Settings mySettings;
-
-    SoftProjector *softProjector;
 
 public slots:
     void updateSetting(GeneralSettings &g,Theme &t, SlideShowSettings &ssets,
@@ -101,7 +89,8 @@ public slots:
     void setAppDataDir(QDir d){appDataDir = d;}
 
 private:
-    Ui::SoftProjectorClass *ui;
+    QQuickWidget *quickView;
+    Workspace *workspace;
     SettingsDialog *settingsDialog;
     HelpDialog *helpDialog;
     PresentationType pType;
@@ -110,8 +99,10 @@ private:
     QString languagePath;
     QTranslator translator;
 
+    // Replaces the old checkable "close display" toolbar action.
+    bool displayVisible;
+
     //For saving and opening schedule files
-    //QString project_file_path;
     QString schedule_file_path;
     bool is_schedule_saved;
     QString cur_locale;
@@ -120,24 +111,26 @@ private:
     bool hasDisplayScreen3;
     bool hasDisplayScreen4;
 
-    // shortcuts
-    QShortcut *shpgUP;
-    QShortcut *shpgDwn;
-    QShortcut *shSart1;
-    QShortcut *shSart2;
-
     // Pictures
     QList<SlideShowItem> pictureShowList;
 
     // video items
-//    Phonon::SeekSlider *playerSlider;
-//    Phonon::VolumeSlider *volumeSlider;
     VideoInfo currentVideo;
-//    Phonon::AudioOutput *playerAudioOutput;
 
-    // Schelude list
+    // Schedule list
     QList<Schedule> schedule;
     QDir appDataDir;
+
+    // ── QML plumbing ────────────────────────────────────────────────────────
+    void setupQuickView();
+    void publishLiveState(const QString &kind, const QString &title,
+                          const QStringList &slides, int row, const QString &notes = QString());
+    void publishActionState();
+    int currentShowRow() const;
+    int showCount() const;
+    QList<int> selectedShowRows() const;
+    void setShowRow(int row);
+    void countSongUse(const Song &song);
 
 private slots:
     void showDisplayScreen(bool show);
@@ -146,7 +139,6 @@ private slots:
                       BibleVersionSettings &b1, BibleVersionSettings &b2,
                       BibleVersionSettings &b3, BibleVersionSettings &b4);
     void on_actionSong_Counter_triggered();
-    void on_projectTab_currentChanged(int index);
     void updateEditActions();
     void on_actionNew_triggered();
     void on_actionEdit_triggered();
@@ -166,7 +158,6 @@ private slots:
     void on_action_Help_triggered();
     void on_actionManage_Database_triggered();
     void on_actionAbout_triggered();
-    void on_listShow_doubleClicked(QModelIndex index);
     void on_actionSettings_triggered();
     void newSong();
     void copySong();
@@ -175,7 +166,6 @@ private slots:
     void newSlideShow();
     void editSlideShow();
     void deleteSlideShow();
-    void addMediaToLibrary();
     void removeMediaFromLibrary();
     void newAnnouncement();
     void editAnnouncement();
@@ -183,11 +173,10 @@ private slots:
     void deleteAnnoucement();
     void on_actionShow_triggered();
     void on_actionHide_triggered();
-    void on_listShow_currentRowChanged(int currentRow);
     void on_actionClose_triggered();
     void setSongList(Song song, int row);
     void setAnnounceText(Announcement announce, int row);
-    void setChapterList(QStringList chapter_list, QString caption, QItemSelection selectedItems);
+    void setChapterList(QStringList chapter_list, QString caption, const QList<int> &rows);
     void setPictureList(QList<SlideShowItem> &image_list, int row, QString name);
     void setVideo(VideoInfo &video);
     void playVideo();
@@ -196,8 +185,12 @@ private slots:
     void setVideoPosition(qint64 position);
     void videoStopped();
 
-    void on_listShow_itemSelectionChanged();
-    void on_rbMultiVerse_toggled(bool checked);
+    void onLiveIndexChanged();
+    void onMultiVerseChanged();
+    void onWorkspaceAction(const QString &action);
+    void onWorkspaceTransport(const QString &what, qint64 value);
+    void onScheduleAddRequested(const QString &kind);
+
     void on_actionPrint_triggered();
     void on_actionPrintSchedule_triggered();
 
@@ -214,12 +207,7 @@ private slots:
     void addToShcedule(VideoInfo &v);
     void addToShcedule(Announcement &a);
     void reloadShceduleList();
-    void on_listWidgetSchedule_doubleClicked(const QModelIndex &index);
-    void on_listWidgetSchedule_itemSelectionChanged();
-    void on_actionMoveScheduleTop_triggered();
-    void on_actionMoveScheduleUp_triggered();
-    void on_actionMoveScheduleDown_triggered();
-    void on_actionMoveScheduleBottom_triggered();
+    void openScheduleEntry(int row, bool goLive);
     void on_actionNewSchedule_triggered();
     void on_actionOpenSchedule_triggered();
     void on_actionSaveSchedule_triggered();
@@ -248,7 +236,6 @@ private slots:
     void on_actionClear_triggered();
 
     void on_actionCloseDisplay_triggered();
-    void updateCloseDisplayButtons(bool isOn);
 
 protected:
     void closeEvent(QCloseEvent *event);

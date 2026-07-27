@@ -25,7 +25,7 @@
 #include <QtPrintSupport>
 #include "song.hpp"
 #include "bible.hpp"
-#include "announcewidget.hpp"
+#include "announcement.hpp"
 #include "schedule.hpp"
 
 namespace Ui {

@@ -111,6 +111,17 @@ int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
     a.setApplicationName("SoftProjector");
+    // QSettings — which backs the workspace's theme preference — needs these.
+    a.setOrganizationName("SoftProjector");
+    a.setOrganizationDomain("softprojector.org");
+    // The workspace paints its own chrome; Fusion keeps the remaining widget
+    // dialogs neutral so the platform style does not fight the dark palette.
+    a.setStyle(QStyleFactory::create("Fusion"));
+    a.setOrganizationName("SoftProjector");
+    a.setOrganizationDomain("softprojector.org");
+    // The workspace paints its own chrome; Fusion keeps the remaining widget
+    // dialogs neutral so the platform style does not fight the dark palette.
+    a.setStyle(QStyleFactory::create("Fusion"));
 
     QPixmap pixmap(":icons/icons/splash.png");
     QSplashScreen splash(pixmap);

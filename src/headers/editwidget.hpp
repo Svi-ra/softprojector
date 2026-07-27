@@ -42,7 +42,7 @@ public slots:
     void setCopy(Song copy);
     void setEdit(Song sEdit);
     void setNew();
-    QStringList categories();
+    static QStringList categories();
     void retranslateUis();
 
 signals:
