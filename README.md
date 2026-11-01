@@ -37,8 +37,9 @@ the operator's hands always know where the running order and Show are:
 | Live | What is on the projector right now, the slides to step through, and Show / Hide / Clear |
 
 Keyboard: `F6`–`F10` switch modules, `PgUp`/`PgDn` step slides, `Shift+F5`
-shows, `Ctrl+F` focuses search, `Ctrl+D` toggles the theme, and the usual
-`Ctrl+N` / `O` / `S` / `P` apply to the schedule.
+shows, `Esc` hides, `Shift+Esc` clears the text, `Ctrl+F` focuses search,
+`Ctrl+D` toggles the theme, and the usual `Ctrl+N` / `O` / `S` / `P` apply to
+the schedule.
 
 ## Layout of the source
 

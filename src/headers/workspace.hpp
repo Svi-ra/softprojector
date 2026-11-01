@@ -235,6 +235,12 @@ public:
     SlideShow currentSlideShow() const { return mCurrentSlideShow; }
     VideoInfo currentMedia() const;
     Bible *bibleEngine() { return &mBible; }
+    // The version the operator is reading, as a database id ("" if none installed).
+    QString browsedBibleId() const
+    {
+        return mBibleVersionIds.isEmpty() ? QString()
+                                          : QString::number(mBibleVersionIds.value(mBibleVersionIndex));
+    }
     BibleHistory bibleRefFor(const QList<int> &rows) const;
     BibleHistory currentBibleRef() const { return bibleRefFor(mLiveSelectedRows); }
     QStringList currentChapterList() const { return mBibleChapterList; }

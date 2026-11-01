@@ -412,6 +412,8 @@ Item {
     Shortcut { sequence: "PgDown"; onActivated: App.invoke("nextSlide") }
     Shortcut { sequence: "PgUp";   onActivated: App.invoke("prevSlide") }
     Shortcut { sequence: "Shift+F5"; onActivated: App.invoke("show") }
+    Shortcut { sequence: "Esc";       onActivated: App.invoke("hide") }
+    Shortcut { sequence: "Shift+Esc"; onActivated: App.invoke("clear") }
     Shortcut { sequence: "Ctrl+Shift+B"; onActivated: App.invoke("show") }
     Shortcut { sequence: StandardKey.New;   onActivated: App.invoke("newSchedule") }
     Shortcut { sequence: StandardKey.Open;  onActivated: App.invoke("openSchedule") }

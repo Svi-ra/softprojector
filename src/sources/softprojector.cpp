@@ -443,6 +443,17 @@ void SoftProjector::updateSetting(GeneralSettings &g, Theme &t, SlideShowSetting
     workspace->applyBibleSettings(mySettings.bibleSets);
     workspace->applySlideSettings(mySettings.slideSets);
 
+    // A never-configured profile has every projected version set to "none", so
+    // Go Live renders an empty verse and the projector stays blank while the
+    // workspace browses the Bible perfectly. Fall back to the version being
+    // read. Only when nothing at all is chosen — picking secondary/trinary
+    // without a primary is a deliberate layout.
+    if (mySettings.bibleSets.primaryBible == QLatin1String("none")
+            && mySettings.bibleSets.secondaryBible == QLatin1String("none")
+            && mySettings.bibleSets.trinaryBible == QLatin1String("none")
+            && !workspace->browsedBibleId().isEmpty())
+        mySettings.bibleSets.primaryBible = workspace->browsedBibleId();
+
     theme.bible.versions = mySettings.bibleSets;
     theme.bible2.versions = mySettings.bibleSets2;
     theme.bible3.versions = mySettings.bibleSets3;

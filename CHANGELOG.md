@@ -69,9 +69,21 @@ component reference and the C++ boundary in `src/qml/README.md`.
 - Verse numbers render as tabular figures beside the text rather than being
   folded into it; chapters open with the first verse selected.
 - Keyboard shortcuts are unchanged (`F6`–`F10`, `PgUp`/`PgDn`, `Shift+F5`,
-  `Ctrl+N`/`O`/`S`/`P`) so no operator has to relearn a service.
+  `Esc`, `Shift+Esc`, `Ctrl+N`/`O`/`S`/`P`) so no operator has to relearn a
+  service.
 - Application now sets an organisation name, required for `QSettings`, and uses
   the Fusion style so the remaining widget dialogs sit with the dark palette.
+
+### Fixed
+
+- Going live with a Bible verse left the projector blank on a profile where no
+  Bible version had ever been chosen in Settings — the workspace browsed the
+  installed Bible happily, but the projected version was still `none`, so the
+  verse lookup returned nothing. When *no* version at all is configured for the
+  first display, the version being read is now used.
+- `Esc` (hide) and `Shift+Esc` (clear) work again from the workspace window;
+  they were lost with the old menu actions. They already worked while the
+  projector window itself had focus.
 
 ### Removed
 
